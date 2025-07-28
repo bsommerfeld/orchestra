@@ -26,11 +26,21 @@ import java.util.stream.Stream;
 @Singleton
 public class JsonSymphonyRepository implements SymphonyRepository {
 
-    private static final String STORAGE_DIR = "data/symphonies";
+    private static final String DEFAULT_STORAGE_DIR = "data/symphonies";
     private static final String FILE_EXTENSION = ".json";
 
     private final SymphonyMapper symphonyMapper;
     private final ObjectMapper objectMapper;
+    
+    /**
+     * Gets the storage directory for Symphony files.
+     * This method can be overridden in tests to use a different directory.
+     *
+     * @return The path to the storage directory
+     */
+    protected String getStorageDir() {
+        return DEFAULT_STORAGE_DIR;
+    }
 
     /**
      * Constructs a new JsonSymphonyRepository with the specified SymphonyMapper.
@@ -45,9 +55,9 @@ public class JsonSymphonyRepository implements SymphonyRepository {
 
         // Create the storage directory if it doesn't exist
         try {
-            Files.createDirectories(Paths.get(STORAGE_DIR));
+            Files.createDirectories(Paths.get(getStorageDir()));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to create storage directory: " + STORAGE_DIR, e);
+            throw new RuntimeException("Failed to create storage directory: " + getStorageDir(), e);
         }
     }
 
@@ -100,7 +110,7 @@ public class JsonSymphonyRepository implements SymphonyRepository {
         try {
             // Get all JSON files in the storage directory
             List<Symphony> symphonies = new ArrayList<>();
-            Path dirPath = Paths.get(STORAGE_DIR);
+            Path dirPath = Paths.get(getStorageDir());
             
             if (!Files.exists(dirPath)) {
                 return symphonies;
@@ -156,6 +166,6 @@ public class JsonSymphonyRepository implements SymphonyRepository {
     private File getFile(String title) {
         // Sanitize the title to create a valid filename
         String sanitizedTitle = title.replaceAll("[^a-zA-Z0-9.-]", "_");
-        return Paths.get(STORAGE_DIR, sanitizedTitle + FILE_EXTENSION).toFile();
+        return Paths.get(getStorageDir(), sanitizedTitle + FILE_EXTENSION).toFile();
     }
 }
