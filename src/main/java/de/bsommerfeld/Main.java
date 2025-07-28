@@ -1,7 +1,11 @@
 package de.bsommerfeld;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import de.bsommerfeld.orchestra.ui.Orchestra;
+import javafx.application.Application;
+
 public class Main {
 
+    public static void main(String[] args) {
+        Application.launch(Orchestra.class);
+    }
 }
