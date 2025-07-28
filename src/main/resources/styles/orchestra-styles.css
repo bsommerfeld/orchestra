@@ -1,0 +1,21 @@
+.custom-title-bar {
+    -fx-background-color: #33363b; /* Dunkler Hintergrund, passend zu PrimerLight */
+    -fx-padding: 8px 10px 8px 10px; /* Padding: Top, Right, Bottom, Left. Top und Right müssen angepasst werden! */
+    /* Der Wert für das rechte Padding muss sorgfältig gewählt werden,
+       um die OS-Fensterbuttons (Minimieren, Maximieren, Schließen) nicht zu überdecken.
+       Dieser Wert ist sehr OS-abhängig (Windows, macOS, Linux). */
+    -fx-min-height: 30px; /* Mindesthöhe für die Titelleiste */
+    -fx-pref-height: 30px;
+}
+
+.project-title-label {
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-padding: 0px 0px 0px 60px;
+    -fx-font-weight: bold;
+}
+
+.main-content {
+    -fx-background-color: -color-bg-default; /* Nutzt AtlantaFX Hintergrundfarbe */
+    -fx-padding: 10px;
+}
