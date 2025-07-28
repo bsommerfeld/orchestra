@@ -5,6 +5,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import de.bsommerfeld.orchestra.guice.OrchestraModule;
 import de.bsommerfeld.orchestra.ui.controller.MetaController;
+import de.bsommerfeld.orchestra.ui.view.StageProvider;
 import de.bsommerfeld.orchestra.ui.view.ViewProvider;
 import javafx.application.Application;
 import javafx.scene.Parent;
@@ -24,12 +25,19 @@ public class Orchestra extends Application {
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
 
         ViewProvider viewProvider = injector.getInstance(ViewProvider.class);
+        StageProvider stageProvider = injector.getInstance(StageProvider.class);
+        
+        // Set the primary stage in the StageProvider
+        stageProvider.setPrimaryStage(stage);
+        
+        // Show the main view in the primary stage
         Parent root = viewProvider.requestView(MetaController.class).parent();
-
         Scene scene = new Scene(root);
-
         stage.setScene(scene);
         stage.setTitle("Orchestra");
         stage.show();
+        
+        // Alternative approach using StageProvider:
+        // stageProvider.showView("primary", MetaController.class, "Orchestra");
     }
 }

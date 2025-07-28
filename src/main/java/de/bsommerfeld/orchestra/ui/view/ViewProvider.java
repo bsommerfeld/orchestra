@@ -12,7 +12,10 @@ public class ViewProvider {
     private final Map<Class<?>, Consumer<?>> listenerMap = new ConcurrentHashMap<>();
 
     // Classes that should not be cached (need a new instance each time)
+    // Note: Views that might be shown in multiple stages simultaneously must be included here
+    // to avoid the "is already set as root of another scene" JavaFX error
     private final Class<?>[] nonCachedClasses = {
+        de.bsommerfeld.orchestra.ui.controller.MetaController.class
     };
 
     private final ViewLoader viewLoader;

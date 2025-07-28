@@ -14,6 +14,7 @@ import de.bsommerfeld.orchestra.persistence.service.SymphonyService;
 import de.bsommerfeld.orchestra.persistence.service.SymphonyServiceImpl;
 import de.bsommerfeld.orchestra.ui.view.ViewLoader;
 import de.bsommerfeld.orchestra.ui.view.ViewProvider;
+import de.bsommerfeld.orchestra.ui.view.StageProvider;
 
 /**
  * Guice module for the Orchestra application.
@@ -25,6 +26,7 @@ public class OrchestraModule extends AbstractModule {
     protected void configure() {
         // UI components
         bind(ViewProvider.class).asEagerSingleton();
+        bind(StageProvider.class).asEagerSingleton();
         bind(ViewLoader.class).in(Singleton.class);
         
         // Persistence components
