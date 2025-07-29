@@ -94,3 +94,57 @@
 .voices-tree-view .check-box {
     -fx-padding: 0 5 0 0;
 }
+
+/* Style for the add voice button */
+.add-voice-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-min-width: 24px;
+    -fx-min-height: 24px;
+    -fx-max-width: 24px;
+    -fx-max-height: 24px;
+    -fx-padding: 0;
+    -fx-background-radius: 12px;
+    -fx-cursor: hand;
+}
+
+.add-voice-button:hover {
+    -fx-background-color: #45a049;
+}
+
+/* Style for the choir buttons */
+.choir-button {
+    -fx-background-color: #f5f5f5;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-padding: 8px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.choir-button:hover {
+    -fx-background-color: #e0e0e0;
+}
+
+/* Style for the add list button */
+.add-button {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px;
+    -fx-cursor: hand;
+}
+
+.add-button:hover {
+    -fx-background-color: #0b7dda;
+}
+
+/* Style for the choirs container */
+.choirs-container {
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 1 0 0;
+    -fx-min-width: 200px;
+    -fx-pref-width: 200px;
+}

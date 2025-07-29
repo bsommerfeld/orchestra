@@ -17,6 +17,7 @@ public final class Voice { // Made final as it's an immutable value object
     private final String title;
     private final String description; // Changed to Optional<String> for clarity on absence
     private final List<Voice> subVoices; // Changed to List<Voice> to represent nested structure
+    private final boolean completed; // Added to track completion status
 
     /**
      * Constructs a new Voice instance.
@@ -25,15 +26,30 @@ public final class Voice { // Made final as it's an immutable value object
      * @param description An optional description of the voice/task. Can be null or empty.
      * @param subVoices A list of sub-voices (sub-tasks) belonging to this voice. Can be null or empty.
      * The list will be defensively copied to ensure immutability.
+     * @param completed Whether this voice/task is completed.
      * @throws IllegalArgumentException if the title is null or empty.
      */
-    public Voice(String title, String description, List<Voice> subVoices) {
+    public Voice(String title, String description, List<Voice> subVoices, boolean completed) {
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Voice title cannot be null or empty.");
         }
         this.title = title;
         this.description = description; // Will be handled by Optional in getter
         this.subVoices = (subVoices != null) ? List.copyOf(subVoices) : Collections.emptyList(); // Defensive copy and immutability
+        this.completed = completed;
+    }
+    
+    /**
+     * Constructs a new Voice instance with completed set to false.
+     *
+     * @param title The mandatory title of the voice/task. Cannot be null or empty.
+     * @param description An optional description of the voice/task. Can be null or empty.
+     * @param subVoices A list of sub-voices (sub-tasks) belonging to this voice. Can be null or empty.
+     * The list will be defensively copied to ensure immutability.
+     * @throws IllegalArgumentException if the title is null or empty.
+     */
+    public Voice(String title, String description, List<Voice> subVoices) {
+        this(title, description, subVoices, false);
     }
 
     /**
@@ -62,20 +78,40 @@ public final class Voice { // Made final as it's an immutable value object
     public List<Voice> getSubVoices() {
         return subVoices; // Already an immutable copy from constructor
     }
+    
+    /**
+     * Returns whether this voice/task is completed.
+     *
+     * @return true if this voice/task is completed, false otherwise.
+     */
+    public boolean isCompleted() {
+        return completed;
+    }
+    
+    /**
+     * Creates a new Voice with the same properties as this one but with the completed status changed.
+     *
+     * @param completed the new completed status
+     * @return a new Voice with the updated completed status
+     */
+    public Voice withCompleted(boolean completed) {
+        return new Voice(this.title, this.description, this.subVoices, completed);
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Voice voice = (Voice) o;
-        return Objects.equals(title, voice.title) &&
+        return completed == voice.completed &&
+                Objects.equals(title, voice.title) &&
                 Objects.equals(description, voice.description) && // Compare the raw description field
                 Objects.equals(subVoices, voice.subVoices);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, description, subVoices);
+        return Objects.hash(title, description, subVoices, completed);
     }
 
     @Override
@@ -84,6 +120,7 @@ public final class Voice { // Made final as it's an immutable value object
                 "title='" + title + '\'' +
                 ", description='" + getDescription().orElse("N/A") + '\'' + // Use Optional for toString
                 ", subVoices=" + subVoices.size() + " items" +
+                ", completed=" + completed +
                 '}';
     }
 }
