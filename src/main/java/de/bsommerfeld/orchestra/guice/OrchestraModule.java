@@ -8,6 +8,7 @@ import de.bsommerfeld.orchestra.persistence.mapper.SymphonyMapper;
 import de.bsommerfeld.orchestra.persistence.mapper.SymphonyMapperImpl;
 import de.bsommerfeld.orchestra.persistence.mapper.VoiceMapper;
 import de.bsommerfeld.orchestra.persistence.mapper.VoiceMapperImpl;
+import de.bsommerfeld.orchestra.persistence.path.PlatformPathProvider;
 import de.bsommerfeld.orchestra.persistence.repository.JsonSymphonyRepository;
 import de.bsommerfeld.orchestra.persistence.repository.SymphonyRepository;
 import de.bsommerfeld.orchestra.persistence.service.SymphonyService;
@@ -30,6 +31,9 @@ public class OrchestraModule extends AbstractModule {
         bind(ViewLoader.class).in(Singleton.class);
         
         // Persistence components
+        
+        // Path provider for platform-specific paths
+        bind(PlatformPathProvider.class).in(Singleton.class);
         
         // Mappers
         bind(VoiceMapper.class).to(VoiceMapperImpl.class);

@@ -7,6 +7,7 @@ import com.google.inject.Singleton;
 import de.bsommerfeld.orchestra.model.Symphony;
 import de.bsommerfeld.orchestra.persistence.dto.SymphonyDTO;
 import de.bsommerfeld.orchestra.persistence.mapper.SymphonyMapper;
+import de.bsommerfeld.orchestra.persistence.path.PlatformPathProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,11 +27,11 @@ import java.util.stream.Stream;
 @Singleton
 public class JsonSymphonyRepository implements SymphonyRepository {
 
-    private static final String DEFAULT_STORAGE_DIR = "data/symphonies";
     private static final String FILE_EXTENSION = ".json";
 
     private final SymphonyMapper symphonyMapper;
     private final ObjectMapper objectMapper;
+    private final PlatformPathProvider pathProvider;
     
     /**
      * Gets the storage directory for Symphony files.
@@ -39,17 +40,36 @@ public class JsonSymphonyRepository implements SymphonyRepository {
      * @return The path to the storage directory
      */
     protected String getStorageDir() {
-        return DEFAULT_STORAGE_DIR;
+        // Check if the legacy directory exists and has files
+        Path legacyPath = pathProvider.getLegacyStorageDirectory();
+        if (Files.exists(legacyPath)) {
+            try {
+                try (Stream<Path> files = Files.list(legacyPath)) {
+                    if (files.anyMatch(path -> path.toString().endsWith(FILE_EXTENSION))) {
+                        // If legacy directory exists and has JSON files, use it for backward compatibility
+                        return legacyPath.toString();
+                    }
+                }
+            } catch (IOException e) {
+                // If we can't read the legacy directory, use the platform-specific directory
+            }
+        }
+        
+        // Use the platform-specific directory
+        Path platformPath = pathProvider.getSymphonyDirectory();
+        return platformPath.toString();
     }
 
     /**
-     * Constructs a new JsonSymphonyRepository with the specified SymphonyMapper.
+     * Constructs a new JsonSymphonyRepository with the specified SymphonyMapper and PlatformPathProvider.
      *
      * @param symphonyMapper The SymphonyMapper to use for converting Symphony objects
+     * @param pathProvider The PlatformPathProvider to use for determining storage directories
      */
     @Inject
-    public JsonSymphonyRepository(SymphonyMapper symphonyMapper) {
+    public JsonSymphonyRepository(SymphonyMapper symphonyMapper, PlatformPathProvider pathProvider) {
         this.symphonyMapper = symphonyMapper;
+        this.pathProvider = pathProvider;
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule()); // For handling LocalDateTime
 
