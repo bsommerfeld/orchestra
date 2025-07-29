@@ -5,6 +5,7 @@ import de.bsommerfeld.orchestra.model.Symphony;
 import de.bsommerfeld.orchestra.model.Voice;
 import de.bsommerfeld.orchestra.persistence.dto.SymphonyDTO;
 import de.bsommerfeld.orchestra.persistence.mapper.SymphonyMapper;
+import de.bsommerfeld.orchestra.persistence.path.PlatformPathProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,9 @@ class JsonSymphonyRepositoryTest {
 
     @Mock
     private SymphonyMapper symphonyMapper;
+    
+    @Mock
+    private PlatformPathProvider pathProvider;
 
     private TestJsonSymphonyRepository repository;
     private Symphony testSymphony;
@@ -43,8 +47,8 @@ class JsonSymphonyRepositoryTest {
      * Test subclass of JsonSymphonyRepository that overrides the storage directory.
      */
     private static class TestJsonSymphonyRepository extends JsonSymphonyRepository {
-        public TestJsonSymphonyRepository(SymphonyMapper symphonyMapper) {
-            super(symphonyMapper);
+        public TestJsonSymphonyRepository(SymphonyMapper symphonyMapper, PlatformPathProvider pathProvider) {
+            super(symphonyMapper, pathProvider);
         }
         
         @Override
@@ -74,9 +78,14 @@ class JsonSymphonyRepositoryTest {
         // Configure mocks with lenient stubbings to avoid unnecessary stubbing warnings
         Mockito.lenient().when(symphonyMapper.toDto(any(Symphony.class))).thenReturn(testSymphonyDTO);
         Mockito.lenient().when(symphonyMapper.toDomain(any(SymphonyDTO.class))).thenReturn(testSymphony);
+        
+        // Configure path provider mock
+        Path legacyPath = Paths.get(TEST_STORAGE_DIR);
+        Mockito.lenient().when(pathProvider.getLegacyStorageDirectory()).thenReturn(legacyPath);
+        Mockito.lenient().when(pathProvider.getSymphonyDirectory()).thenReturn(legacyPath);
 
-        // Create repository with the symphony mapper
-        repository = new TestJsonSymphonyRepository(symphonyMapper);
+        // Create repository with the symphony mapper and path provider
+        repository = new TestJsonSymphonyRepository(symphonyMapper, pathProvider);
     }
 
     @Test

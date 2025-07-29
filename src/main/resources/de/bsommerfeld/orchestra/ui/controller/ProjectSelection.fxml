@@ -55,8 +55,9 @@
             <padding>
                 <Insets top="10" right="20" bottom="20" left="20"/>
             </padding>
-            <Button text="New Project" styleClass="button-primary"/>
-            <Button text="Open Project" styleClass="button-secondary"/>
+            <Button fx:id="newProjectButton" text="New Project" styleClass="button-primary" onAction="#onNewProject"/>
+            <Button fx:id="openProjectButton" text="Open Project" styleClass="button-secondary" onAction="#onOpenProject"/>
+            <Button fx:id="deleteProjectButton" text="Delete Project" styleClass="button-danger" onAction="#onDeleteProject"/>
         </HBox>
     </bottom>
 

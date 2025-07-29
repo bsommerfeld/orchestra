@@ -8,10 +8,15 @@ import de.bsommerfeld.orchestra.ui.view.View;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller for the project selection screen.
@@ -26,6 +31,15 @@ public class ProjectSelectionController {
     
     @FXML
     private ListView<String> projectListView;
+    
+    @FXML
+    private Button newProjectButton;
+    
+    @FXML
+    private Button openProjectButton;
+    
+    @FXML
+    private Button deleteProjectButton;
     
     private ObservableList<String> projects = FXCollections.observableArrayList();
     
@@ -84,6 +98,119 @@ public class ProjectSelectionController {
     }
     
     /**
+     * Handles the action when the "New Project" button is clicked.
+     * Opens a dialog to enter a project name and creates a new project.
+     */
+    @FXML
+    public void onNewProject() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("New Project");
+        dialog.setHeaderText("Create a new project");
+        dialog.setContentText("Please enter the project name:");
+        
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(projectName -> {
+            if (!projectName.trim().isEmpty()) {
+                try {
+                    // Create a new Symphony with the given name and no description
+                    symphonyService.createSymphony(projectName, null);
+                    
+                    // Refresh the project list
+                    loadProjects();
+                    
+                    // Show a confirmation message
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Project Created");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Project '" + projectName + "' has been created successfully.");
+                    alert.showAndWait();
+                } catch (IllegalArgumentException e) {
+                    // Show an error message if the project already exists
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Failed to create project: " + e.getMessage());
+                    alert.showAndWait();
+                }
+            }
+        });
+    }
+    
+    /**
+     * Handles the action when the "Open Project" button is clicked.
+     * Opens the selected project in a new stage.
+     */
+    @FXML
+    public void onOpenProject() {
+        String selectedProject = projectListView.getSelectionModel().getSelectedItem();
+        if (selectedProject != null) {
+            openProject(selectedProject);
+        } else {
+            // Show a message to select a project first
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("No Selection");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a project to open.");
+            alert.showAndWait();
+        }
+    }
+    
+    /**
+     * Handles the action when the "Delete Project" button is clicked.
+     * Deletes the selected project after confirmation.
+     */
+    @FXML
+    public void onDeleteProject() {
+        String selectedProject = projectListView.getSelectionModel().getSelectedItem();
+        if (selectedProject != null && !selectedProject.equals("No projects found. Create a new project.")) {
+            // Ask for confirmation before deleting
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete Project");
+            alert.setHeaderText("Delete Project: " + selectedProject);
+            alert.setContentText("Are you sure you want to delete this project? This action cannot be undone.");
+            
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // Delete the project
+                boolean deleted = symphonyService.deleteSymphony(selectedProject);
+                
+                if (deleted) {
+                    // Refresh the project list
+                    loadProjects();
+                    
+                    // Show a confirmation message
+                    Alert confirmAlert = new Alert(Alert.AlertType.INFORMATION);
+                    confirmAlert.setTitle("Project Deleted");
+                    confirmAlert.setHeaderText(null);
+                    confirmAlert.setContentText("Project '" + selectedProject + "' has been deleted successfully.");
+                    confirmAlert.showAndWait();
+                } else {
+                    // Show an error message if deletion failed
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Error");
+                    errorAlert.setHeaderText(null);
+                    errorAlert.setContentText("Failed to delete project: " + selectedProject);
+                    errorAlert.showAndWait();
+                }
+            }
+        } else if (selectedProject != null && selectedProject.equals("No projects found. Create a new project.")) {
+            // Show a message that there's no project to delete
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("No Projects");
+            alert.setHeaderText(null);
+            alert.setContentText("There are no projects to delete.");
+            alert.showAndWait();
+        } else {
+            // Show a message to select a project first
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("No Selection");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a project to delete.");
+            alert.showAndWait();
+        }
+    }
+    
+    /**
      * Opens a new stage for the selected project.
      * Verifies that the project exists in the SymphonyService before opening it.
      *
@@ -92,7 +219,7 @@ public class ProjectSelectionController {
     private void openProject(String projectName) {
         // Skip if the message about no projects is selected
         if (projectName.equals("No projects found. Create a new project.")) {
-            // TODO: Implement project creation functionality
+            onNewProject();
             return;
         }
         
@@ -109,7 +236,8 @@ public class ProjectSelectionController {
             });
             
             // Show the MetaController in the new stage with the project name
-            // The MetaController will load the Symphony object using the SymphonyService
+            // TODO: This is left open for the next developer to implement the actual project opening functionality.
+            // The MetaController should load the Symphony object using the SymphonyService and display its contents.
             stageProvider.showView(stageName, MetaController.class, projectName);
         }
     }
