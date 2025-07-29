@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx"
+            fx:controller="de.bsommerfeld.orchestra.ui.controller.ProjectController"
+            prefHeight="600.0" prefWidth="800.0"
+            styleClass="project-container">
+
+    <!-- Header -->
+    <top>
+        <VBox spacing="10" styleClass="project-header">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+            <Label fx:id="projectTitleLabel" styleClass="project-title">
+                <font>
+                    <Font size="24.0"/>
+                </font>
+            </Label>
+            <Label fx:id="projectDescriptionLabel" styleClass="project-description">
+                <font>
+                    <Font size="14.0"/>
+                </font>
+            </Label>
+        </VBox>
+    </top>
+
+    <!-- Main content with Voices TreeView -->
+    <center>
+        <VBox spacing="10" styleClass="project-content">
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20"/>
+            </padding>
+            <HBox>
+                <Label text="Voices" styleClass="section-title">
+                    <font>
+                        <Font size="16.0"/>
+                    </font>
+                </Label>
+            </HBox>
+            <TreeView fx:id="voicesTreeView" VBox.vgrow="ALWAYS" styleClass="voices-tree-view"/>
+        </VBox>
+    </center>
+
+    <!-- Choir container (not used in this implementation but kept for future expansion) -->
+    <left>
+        <VBox fx:id="choirsContainer" spacing="10" styleClass="choirs-container" visible="false" managed="false">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="20"/>
+            </padding>
+        </VBox>
+    </left>
+
+</BorderPane>

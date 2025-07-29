@@ -235,10 +235,11 @@ public class ProjectSelectionController {
                 stage.setHeight(600);
             });
             
-            // Show the MetaController in the new stage with the project name
-            // TODO: This is left open for the next developer to implement the actual project opening functionality.
-            // The MetaController should load the Symphony object using the SymphonyService and display its contents.
-            stageProvider.showView(stageName, MetaController.class, projectName);
+            // Show the ProjectController in the new stage with the project name
+            stageProvider.showView(stageName, ProjectController.class, projectName, null, controller -> {
+                // Configure the ProjectController to load the project
+                ((ProjectController) controller).loadProject(projectName);
+            });
         }
     }
 }

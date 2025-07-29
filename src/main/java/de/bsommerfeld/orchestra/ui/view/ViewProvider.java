@@ -15,7 +15,7 @@ public class ViewProvider {
     // Note: Views that might be shown in multiple stages simultaneously must be included here
     // to avoid the "is already set as root of another scene" JavaFX error
     private final Class<?>[] nonCachedClasses = {
-        de.bsommerfeld.orchestra.ui.controller.MetaController.class
+        de.bsommerfeld.orchestra.ui.controller.ProjectController.class
     };
 
     private final ViewLoader viewLoader;
