@@ -13,8 +13,8 @@
             fx:controller="de.bsommerfeld.orchestra.ui.controller.TaskController"
             prefHeight="600.0" prefWidth="1000.0">
 
-    <ScrollPane fx:id="taskScrollPane" fitToWidth="true" fitToHeight="true" 
-                pannable="true" hbarPolicy="NEVER" vbarPolicy="NEVER"
+    <ScrollPane fx:id="taskScrollPane" 
+                pannable="true" hbarPolicy="AS_NEEDED" vbarPolicy="AS_NEEDED"
                 AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0" 
                 AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
         <content>

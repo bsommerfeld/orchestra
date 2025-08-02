@@ -34,19 +34,123 @@ public class TaskController implements Initializable {
     
     // Variables for drag functionality
     private double dragOffsetX, dragOffsetY;
+    
+    // Variables for canvas dragging
+    private double canvasDragStartX, canvasDragStartY;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Configure the scroll pane for better user experience
         taskScrollPane.setPannable(true);
-        taskScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        taskScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        taskScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        taskScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         
         // Führe das Zeichnen aus, nachdem das UI-Layout vollständig berechnet wurde.
         Platform.runLater(() -> {
             setupDraggableCards();
+            setupCanvasDragging();
+            updateCanvasSize();
             drawConnections();
         });
+    }
+    
+    private void setupCanvasDragging() {
+        // Setup mouse events for dragging the canvas background
+        taskCanvas.setOnMousePressed(this::handleCanvasPressed);
+        taskCanvas.setOnMouseDragged(this::handleCanvasDragged);
+        taskCanvas.setOnMouseReleased(this::handleCanvasReleased);
+    }
+    
+    private void handleCanvasPressed(MouseEvent event) {
+        // Only handle events directly on the canvas, not on its children
+        if (event.getTarget() != taskCanvas) {
+            return;
+        }
+        
+        // Store the initial scroll values and mouse position
+        canvasDragStartX = event.getX();
+        canvasDragStartY = event.getY();
+        
+        // Consume the event to prevent it from bubbling up
+        event.consume();
+    }
+    
+    private void handleCanvasDragged(MouseEvent event) {
+        // Only handle events directly on the canvas, not on its children
+        if (event.getTarget() != taskCanvas) {
+            return;
+        }
+        
+        // Calculate the drag distance
+        double dragX = canvasDragStartX - event.getX();
+        double dragY = canvasDragStartY - event.getY();
+        
+        // Calculate the content size and viewport size
+        double contentWidth = taskCanvas.getWidth();
+        double contentHeight = taskCanvas.getHeight();
+        double viewportWidth = taskScrollPane.getViewportBounds().getWidth();
+        double viewportHeight = taskScrollPane.getViewportBounds().getHeight();
+        
+        // Calculate the new scroll values
+        double newHvalue = taskScrollPane.getHvalue() + (dragX / (contentWidth - viewportWidth));
+        double newVvalue = taskScrollPane.getVvalue() + (dragY / (contentHeight - viewportHeight));
+        
+        // Clamp the values between 0 and 1
+        newHvalue = Math.max(0, Math.min(1, newHvalue));
+        newVvalue = Math.max(0, Math.min(1, newVvalue));
+        
+        // Update the scroll position
+        taskScrollPane.setHvalue(newHvalue);
+        taskScrollPane.setVvalue(newVvalue);
+        
+        // Update the start position for the next drag event
+        canvasDragStartX = event.getX();
+        canvasDragStartY = event.getY();
+        
+        // Consume the event
+        event.consume();
+    }
+    
+    private void handleCanvasReleased(MouseEvent event) {
+        // Only handle events directly on the canvas, not on its children
+        if (event.getTarget() != taskCanvas) {
+            return;
+        }
+        
+        // Consume the event
+        event.consume();
+    }
+    
+    private void updateCanvasSize() {
+        // Get all task cards
+        List<HBox> cards = Arrays.asList(rootTask, subtask1, subtask2, subtask3, subtask4, subSubtask1, subSubtask2);
+        
+        // Find the rightmost and bottommost positions
+        double maxX = 0;
+        double maxY = 0;
+        
+        for (HBox card : cards) {
+            Bounds bounds = card.getBoundsInParent();
+            double rightEdge = bounds.getMaxX();
+            double bottomEdge = bounds.getMaxY();
+            
+            if (rightEdge > maxX) {
+                maxX = rightEdge;
+            }
+            
+            if (bottomEdge > maxY) {
+                maxY = bottomEdge;
+            }
+        }
+        
+        // Add some padding
+        double padding = 200;
+        double newWidth = Math.max(maxX + padding, taskScrollPane.getViewportBounds().getWidth());
+        double newHeight = Math.max(maxY + padding, taskScrollPane.getViewportBounds().getHeight());
+        
+        // Update the canvas size
+        taskCanvas.setPrefWidth(newWidth);
+        taskCanvas.setPrefHeight(newHeight);
     }
     
     private void setupDraggableCards() {
@@ -103,6 +207,9 @@ public class TaskController implements Initializable {
         
         // Redraw connections
         drawConnections();
+        
+        // Update canvas size if needed
+        updateCanvasSize();
         
         // Ensure the scroll pane shows the area where the card is being dragged
         ensureCardVisible(card);
