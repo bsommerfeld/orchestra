@@ -54,6 +54,9 @@ public class TaskController implements Initializable {
     private Map<String, Integer> taskLevels = new HashMap<>();
     private Map<Integer, List<String>> levelToTasks = new HashMap<>();
     
+    // Variable to track the currently selected task
+    private String selectedTaskId = null;
+    
     // Layout constants
     private static final double HORIZONTAL_SPACING = 250.0;
     private static final double VERTICAL_SPACING = 100.0;
@@ -242,6 +245,12 @@ public class TaskController implements Initializable {
         canvasDragStartX = event.getX();
         canvasDragStartY = event.getY();
         
+        // Deselect the current task when clicking on the canvas
+        if (selectedTaskId != null) {
+            selectedTaskId = null;
+            updateTaskSelection();
+        }
+        
         // Consume the event to prevent it from bubbling up
         event.consume();
     }
@@ -349,8 +358,75 @@ public class TaskController implements Initializable {
         // Bring the card to front
         card.toFront();
         
+        // Set this card as the selected task if it's a left-click
+        if (event.getButton() == MouseButton.PRIMARY) {
+            String taskId = card.getId();
+            if (!taskId.equals(selectedTaskId)) {
+                selectedTaskId = taskId;
+                updateTaskSelection();
+            }
+        }
+        
         // Consume the event to prevent it from bubbling up
         event.consume();
+    }
+    
+    /**
+     * Updates the styling of all tasks and connections based on the selected task.
+     */
+    private void updateTaskSelection() {
+        if (selectedTaskId == null) {
+            // If no task is selected, reset all tasks and connections to normal
+            for (HBox card : taskCards.values()) {
+                card.getStyleClass().remove("task-card-selected");
+                card.getStyleClass().remove("task-card-dimmed");
+                card.setOpacity(1.0);
+            }
+            // Redraw connections with normal styling
+            drawConnections();
+            return;
+        }
+        
+        // Get all tasks directly connected to the selected task
+        List<String> connectedTasks = new ArrayList<>();
+        
+        // Add children of selected task
+        List<String> children = taskRelationships.get(selectedTaskId);
+        if (children != null) {
+            connectedTasks.addAll(children);
+        }
+        
+        // Add parents of selected task
+        for (Map.Entry<String, List<String>> entry : taskRelationships.entrySet()) {
+            if (entry.getValue().contains(selectedTaskId)) {
+                connectedTasks.add(entry.getKey());
+            }
+        }
+        
+        // Update styling for all task cards
+        for (Map.Entry<String, HBox> entry : taskCards.entrySet()) {
+            String taskId = entry.getKey();
+            HBox card = entry.getValue();
+            
+            // Remove existing selection-related style classes
+            card.getStyleClass().remove("task-card-selected");
+            card.getStyleClass().remove("task-card-dimmed");
+            
+            if (taskId.equals(selectedTaskId)) {
+                // Selected task gets highlighted
+                card.getStyleClass().add("task-card-selected");
+                card.setOpacity(1.0);
+            } else if (!connectedTasks.contains(taskId)) {
+                // Tasks not connected to the selected task get dimmed
+                card.getStyleClass().add("task-card-dimmed");
+            } else {
+                // Connected tasks remain at full opacity
+                card.setOpacity(1.0);
+            }
+        }
+        
+        // Redraw connections with updated styling
+        drawConnections();
     }
     
     private void handleCardDragged(MouseEvent event) {
@@ -444,13 +520,20 @@ public class TaskController implements Initializable {
             for (String childId : childrenIds) {
                 HBox childCard = taskCards.get(childId);
                 if (childCard != null) {
-                    connectNodes(parentCard, childCard);
+                    boolean isSelectedConnection = false;
+                    
+                    // Check if this connection is related to the selected task
+                    if (selectedTaskId != null) {
+                        isSelectedConnection = parentId.equals(selectedTaskId) || childId.equals(selectedTaskId);
+                    }
+                    
+                    connectNodes(parentCard, childCard, isSelectedConnection);
                 }
             }
         }
     }
 
-    private void connectNodes(Node startNode, Node endNode) {
+    private void connectNodes(Node startNode, Node endNode, boolean isSelected) {
         // Get bounds in parent coordinates to account for any transformations
         Bounds startBounds = startNode.getBoundsInParent();
         Bounds endBounds = endNode.getBoundsInParent();
@@ -474,9 +557,26 @@ public class TaskController implements Initializable {
             endX, endY                       // end point
         );
         
-        // Style the curve
-        curve.setStroke(Color.web("#555555"));
-        curve.setStrokeWidth(2);
+        // Style the curve based on selection status
+        if (isSelected) {
+            // Selected connection gets purple color and full opacity
+            curve.setStroke(Color.web("#BA68C8"));
+            curve.setStrokeWidth(2);
+            curve.setOpacity(1.0);
+            curve.getStyleClass().add("connection-selected");
+        } else if (selectedTaskId != null) {
+            // Non-selected connections get dimmed when a task is selected
+            curve.setStroke(Color.web("#555555"));
+            curve.setStrokeWidth(2);
+            curve.setOpacity(0.5);
+            curve.getStyleClass().add("connection-dimmed");
+        } else {
+            // Default styling when no task is selected
+            curve.setStroke(Color.web("#555555"));
+            curve.setStrokeWidth(2);
+            curve.setOpacity(1.0);
+        }
+        
         curve.setFill(null);
         
         // Add the curve to the connections pane

@@ -56,3 +56,27 @@
 .add-button:hover {
     -fx-text-fill: #FFFFFF;
 }
+
+/* Styles for selected task */
+.task-card-selected {
+    -fx-border-color: #BA68C8;
+    -fx-border-width: 2;
+    -fx-opacity: 1.0;
+}
+
+/* Style for non-selected tasks when a task is selected */
+.task-card-dimmed {
+    -fx-opacity: 0.5;
+}
+
+/* Style for connections related to selected task */
+.connection-selected {
+    -fx-stroke: #BA68C8;
+    -fx-stroke-width: 2;
+    -fx-opacity: 1.0;
+}
+
+/* Style for non-selected connections when a task is selected */
+.connection-dimmed {
+    -fx-opacity: 0.5;
+}
