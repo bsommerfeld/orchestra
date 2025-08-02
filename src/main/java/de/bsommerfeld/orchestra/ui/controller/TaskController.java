@@ -9,8 +9,11 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -529,12 +532,96 @@ public class TaskController implements Initializable {
         card.setViewOrder(0.5);
         
         // Setup mouse pressed event
-        card.setOnMousePressed(this::handleCardPressed);
+        card.setOnMousePressed(event -> {
+            // Handle right-click for context menu
+            if (event.getButton() == MouseButton.SECONDARY) {
+                showContextMenu(card, event);
+            } else {
+                // Handle normal left-click for dragging
+                handleCardPressed(event);
+            }
+        });
         
         // Setup mouse dragged event
         card.setOnMouseDragged(this::handleCardDragged);
         
         // Setup mouse released event
         card.setOnMouseReleased(this::handleCardReleased);
+    }
+    
+    /**
+     * Shows a context menu for the task card with options to remove the task.
+     * 
+     * @param card The task card to show the context menu for
+     * @param event The mouse event that triggered the context menu
+     */
+    private void showContextMenu(HBox card, MouseEvent event) {
+        // Create a context menu
+        ContextMenu contextMenu = new ContextMenu();
+        
+        // Create a menu item for removing the task
+        MenuItem removeItem = new MenuItem("Remove Task");
+        removeItem.setOnAction(e -> removeTask(card.getId()));
+        
+        // Add the menu item to the context menu
+        contextMenu.getItems().add(removeItem);
+        
+        // Show the context menu at the mouse position
+        contextMenu.show(card, event.getScreenX(), event.getScreenY());
+        
+        // Consume the event to prevent it from bubbling up
+        event.consume();
+    }
+    
+    /**
+     * Removes a task and all its subtasks recursively.
+     * 
+     * @param taskId The ID of the task to remove
+     */
+    private void removeTask(String taskId) {
+        // Get the task card
+        HBox taskCard = taskCards.get(taskId);
+        if (taskCard == null) {
+            return;
+        }
+        
+        // Get the list of subtasks
+        List<String> subtaskIds = taskRelationships.get(taskId);
+        if (subtaskIds != null) {
+            // Create a copy of the list to avoid concurrent modification
+            List<String> subtaskIdsCopy = new ArrayList<>(subtaskIds);
+            
+            // Remove all subtasks recursively
+            for (String subtaskId : subtaskIdsCopy) {
+                removeTask(subtaskId);
+            }
+        }
+        
+        // Remove the task from its parent's children list
+        for (Map.Entry<String, List<String>> entry : taskRelationships.entrySet()) {
+            entry.getValue().remove(taskId);
+        }
+        
+        // Remove the task from our data structures
+        taskCards.remove(taskId);
+        taskRelationships.remove(taskId);
+        taskLevels.remove(taskId);
+        
+        // Remove the task card from the canvas
+        taskCanvas.getChildren().remove(taskCard);
+        
+        // Recalculate task levels
+        calculateTaskLevels();
+        
+        // Apply automatic layout
+        applyAutomaticLayout();
+        
+        // Update canvas size
+        updateCanvasSize();
+        
+        // Redraw connections
+        drawConnections();
+        
+        System.out.println("Removed task '" + taskId + "' and all its subtasks");
     }
 }
