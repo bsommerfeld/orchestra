@@ -6,18 +6,25 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.CubicCurve;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 @View
@@ -37,6 +44,18 @@ public class TaskController implements Initializable {
     
     // Variables for canvas dragging
     private double canvasDragStartX, canvasDragStartY;
+    
+    // Data structures for tracking task relationships and layout
+    private Map<String, HBox> taskCards = new HashMap<>();
+    private Map<String, List<String>> taskRelationships = new HashMap<>();
+    private Map<String, Integer> taskLevels = new HashMap<>();
+    private Map<Integer, List<String>> levelToTasks = new HashMap<>();
+    
+    // Layout constants
+    private static final double HORIZONTAL_SPACING = 250.0;
+    private static final double VERTICAL_SPACING = 100.0;
+    private static final double INITIAL_LEFT_MARGIN = 50.0;
+    private static final double INITIAL_TOP_MARGIN = 50.0;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -45,13 +64,129 @@ public class TaskController implements Initializable {
         taskScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         taskScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         
-        // Führe das Zeichnen aus, nachdem das UI-Layout vollständig berechnet wurde.
+        // Add a listener to handle window resizing
+        taskScrollPane.viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
+            // When the viewport size changes, update the canvas size
+            Platform.runLater(this::updateCanvasSize);
+        });
+        
+        // Execute after the UI layout has been fully calculated
         Platform.runLater(() -> {
+            // Initialize task relationships
+            initializeTaskRelationships();
+            
+            // Setup draggable cards and register them in our data structures
             setupDraggableCards();
+            
+            // Setup canvas dragging
             setupCanvasDragging();
+            
+            // Apply automatic layout
+            applyAutomaticLayout();
+            
+            // Update canvas size and draw connections
             updateCanvasSize();
             drawConnections();
         });
+    }
+    
+    private void initializeTaskRelationships() {
+        // Register all task cards
+        taskCards.put("rootTask", rootTask);
+        taskCards.put("subtask1", subtask1);
+        taskCards.put("subtask2", subtask2);
+        taskCards.put("subtask3", subtask3);
+        taskCards.put("subtask4", subtask4);
+        taskCards.put("subSubtask1", subSubtask1);
+        taskCards.put("subSubtask2", subSubtask2);
+        
+        // Define task relationships (parent -> children)
+        taskRelationships.put("rootTask", new ArrayList<>(Arrays.asList("subtask1", "subtask2", "subtask3", "subtask4")));
+        taskRelationships.put("subtask3", new ArrayList<>(Arrays.asList("subSubtask1")));
+        taskRelationships.put("subtask4", new ArrayList<>(Arrays.asList("subSubtask2")));
+        
+        // Initialize empty lists for tasks without children
+        taskRelationships.putIfAbsent("subtask1", new ArrayList<>());
+        taskRelationships.putIfAbsent("subtask2", new ArrayList<>());
+        taskRelationships.putIfAbsent("subSubtask1", new ArrayList<>());
+        taskRelationships.putIfAbsent("subSubtask2", new ArrayList<>());
+        
+        // Calculate task levels (depth in the hierarchy)
+        calculateTaskLevels();
+    }
+    
+    private void calculateTaskLevels() {
+        // Clear existing levels
+        taskLevels.clear();
+        levelToTasks.clear();
+        
+        // Set root task at level 0
+        taskLevels.put("rootTask", 0);
+        levelToTasks.put(0, new ArrayList<>(Arrays.asList("rootTask")));
+        
+        // Calculate levels for all other tasks
+        calculateChildLevels("rootTask", 0);
+    }
+    
+    private void calculateChildLevels(String parentId, int parentLevel) {
+        List<String> children = taskRelationships.get(parentId);
+        if (children == null || children.isEmpty()) {
+            return;
+        }
+        
+        int childLevel = parentLevel + 1;
+        
+        // Ensure the level exists in the map
+        levelToTasks.putIfAbsent(childLevel, new ArrayList<>());
+        
+        for (String childId : children) {
+            // Set the child's level
+            taskLevels.put(childId, childLevel);
+            
+            // Add the child to the level's task list
+            levelToTasks.get(childLevel).add(childId);
+            
+            // Recursively calculate levels for this child's children
+            calculateChildLevels(childId, childLevel);
+        }
+    }
+    
+    private void applyAutomaticLayout() {
+        // Get the maximum level
+        int maxLevel = 0;
+        for (int level : levelToTasks.keySet()) {
+            if (level > maxLevel) {
+                maxLevel = level;
+            }
+        }
+        
+        // Apply layout level by level
+        for (int level = 0; level <= maxLevel; level++) {
+            List<String> tasksInLevel = levelToTasks.get(level);
+            if (tasksInLevel == null || tasksInLevel.isEmpty()) {
+                continue;
+            }
+            
+            // Calculate horizontal position for this level
+            double levelX = INITIAL_LEFT_MARGIN + (level * HORIZONTAL_SPACING);
+            
+            // Position each task in this level
+            double currentY = INITIAL_TOP_MARGIN;
+            for (String taskId : tasksInLevel) {
+                HBox taskCard = taskCards.get(taskId);
+                if (taskCard != null) {
+                    // Clear any existing constraints
+                    AnchorPane.clearConstraints(taskCard);
+                    
+                    // Set the position
+                    taskCard.setLayoutX(levelX);
+                    taskCard.setLayoutY(currentY);
+                    
+                    // Update Y for the next task in this level
+                    currentY += taskCard.getPrefHeight() + VERTICAL_SPACING;
+                }
+            }
+        }
     }
     
     private void setupCanvasDragging() {
@@ -122,14 +257,11 @@ public class TaskController implements Initializable {
     }
     
     private void updateCanvasSize() {
-        // Get all task cards
-        List<HBox> cards = Arrays.asList(rootTask, subtask1, subtask2, subtask3, subtask4, subSubtask1, subSubtask2);
-        
-        // Find the rightmost and bottommost positions
+        // Find the rightmost and bottommost positions of all task cards
         double maxX = 0;
         double maxY = 0;
         
-        for (HBox card : cards) {
+        for (HBox card : taskCards.values()) {
             Bounds bounds = card.getBoundsInParent();
             double rightEdge = bounds.getMaxX();
             double bottomEdge = bounds.getMaxY();
@@ -143,34 +275,32 @@ public class TaskController implements Initializable {
             }
         }
         
-        // Add some padding
+        // Add some padding to ensure there's space for new tasks
         double padding = 200;
-        double newWidth = Math.max(maxX + padding, taskScrollPane.getViewportBounds().getWidth());
-        double newHeight = Math.max(maxY + padding, taskScrollPane.getViewportBounds().getHeight());
+        
+        // Ensure the canvas is at least as large as the viewport
+        double viewportWidth = taskScrollPane.getViewportBounds().getWidth();
+        double viewportHeight = taskScrollPane.getViewportBounds().getHeight();
+        
+        // Calculate new dimensions
+        double newWidth = Math.max(maxX + padding, viewportWidth);
+        double newHeight = Math.max(maxY + padding, viewportHeight);
         
         // Update the canvas size
         taskCanvas.setPrefWidth(newWidth);
         taskCanvas.setPrefHeight(newHeight);
+        
+        // Log the new canvas size
+        System.out.println("Canvas resized to: " + newWidth + "x" + newHeight);
     }
     
     private void setupDraggableCards() {
         // Ensure connections pane is always on top of the task canvas but below the cards
         connectionsPane.setViewOrder(1.0);
         
-        List<HBox> cards = Arrays.asList(rootTask, subtask1, subtask2, subtask3, subtask4, subSubtask1, subSubtask2);
-        
-        for (HBox card : cards) {
-            // Set view order to ensure cards are above the connections pane
-            card.setViewOrder(0.5);
-            
-            // Setup mouse pressed event
-            card.setOnMousePressed(this::handleCardPressed);
-            
-            // Setup mouse dragged event
-            card.setOnMouseDragged(this::handleCardDragged);
-            
-            // Setup mouse released event
-            card.setOnMouseReleased(this::handleCardReleased);
+        // Make all existing cards draggable
+        for (HBox card : taskCards.values()) {
+            setupDraggableCard(card);
         }
     }
     
@@ -264,12 +394,24 @@ public class TaskController implements Initializable {
 
     private void drawConnections() {
         connectionsPane.getChildren().clear();
-        connectNodes(rootTask, subtask1);
-        connectNodes(rootTask, subtask2);
-        connectNodes(rootTask, subtask3);
-        connectNodes(rootTask, subtask4);
-        connectNodes(subtask3, subSubtask1);
-        connectNodes(subtask4, subSubtask2);
+        
+        // Draw connections based on task relationships
+        for (Map.Entry<String, List<String>> entry : taskRelationships.entrySet()) {
+            String parentId = entry.getKey();
+            List<String> childrenIds = entry.getValue();
+            
+            HBox parentCard = taskCards.get(parentId);
+            if (parentCard == null || childrenIds == null || childrenIds.isEmpty()) {
+                continue;
+            }
+            
+            for (String childId : childrenIds) {
+                HBox childCard = taskCards.get(childId);
+                if (childCard != null) {
+                    connectNodes(parentCard, childCard);
+                }
+            }
+        }
     }
 
     private void connectNodes(Node startNode, Node endNode) {
@@ -307,8 +449,92 @@ public class TaskController implements Initializable {
 
     @FXML
     private void handleAddTask(ActionEvent event) {
+        // Get the parent card that contains the clicked button
         Node sourceButton = (Node) event.getSource();
         HBox parentCard = (HBox) sourceButton.getParent();
-        System.out.println("Der 'Add'-Button der Karte mit der ID '" + parentCard.getId() + "' wurde geklickt.");
+        String parentId = parentCard.getId();
+        
+        // Generate a unique ID for the new task
+        String newTaskId = "task_" + System.currentTimeMillis();
+        
+        // Create a new task card
+        HBox newTaskCard = createTaskCard(newTaskId, "New Task", "Added " + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")));
+        
+        // Add the new task card to the canvas
+        taskCanvas.getChildren().add(newTaskCard);
+        
+        // Register the new task card
+        taskCards.put(newTaskId, newTaskCard);
+        
+        // Update task relationships
+        taskRelationships.get(parentId).add(newTaskId);
+        taskRelationships.put(newTaskId, new ArrayList<>());
+        
+        // Recalculate task levels
+        calculateTaskLevels();
+        
+        // Apply automatic layout
+        applyAutomaticLayout();
+        
+        // Update canvas size
+        updateCanvasSize();
+        
+        // Redraw connections
+        drawConnections();
+        
+        // Make the new task card draggable
+        setupDraggableCard(newTaskCard);
+        
+        // Ensure the new card is visible
+        ensureCardVisible(newTaskCard);
+        
+        System.out.println("Added new task '" + newTaskId + "' as child of '" + parentId + "'");
+    }
+    
+    private HBox createTaskCard(String id, String name, String detail) {
+        // Create the task card container
+        HBox taskCard = new HBox();
+        taskCard.setId(id);
+        taskCard.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        taskCard.setSpacing(10);
+        taskCard.getStyleClass().add("task-card");
+        taskCard.setPadding(new Insets(8, 8, 8, 12));
+        
+        // Create the content container
+        VBox content = new VBox();
+        
+        // Create the task name label
+        Label nameLabel = new Label(name);
+        nameLabel.getStyleClass().add("task-name");
+        content.getChildren().add(nameLabel);
+        
+        // Create the task detail label
+        Label detailLabel = new Label(detail);
+        detailLabel.getStyleClass().add("task-detail");
+        content.getChildren().add(detailLabel);
+        
+        // Create the add button
+        Button addButton = new Button("+");
+        addButton.getStyleClass().add("add-button");
+        addButton.setOnAction(this::handleAddTask);
+        
+        // Add components to the task card
+        taskCard.getChildren().addAll(content, addButton);
+        
+        return taskCard;
+    }
+    
+    private void setupDraggableCard(HBox card) {
+        // Set view order to ensure card is above the connections pane
+        card.setViewOrder(0.5);
+        
+        // Setup mouse pressed event
+        card.setOnMousePressed(this::handleCardPressed);
+        
+        // Setup mouse dragged event
+        card.setOnMouseDragged(this::handleCardDragged);
+        
+        // Setup mouse released event
+        card.setOnMouseReleased(this::handleCardReleased);
     }
 }
