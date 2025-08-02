@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21"
+            fx:controller="de.bsommerfeld.orchestra.ui.controller.TaskController"
+            prefHeight="600.0" prefWidth="1000.0" styleClass="task-canvas">
+
+    <Pane fx:id="connectionsPane" mouseTransparent="true"/>
+
+    <HBox fx:id="rootTask" alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="50.0"
+          AnchorPane.topAnchor="250.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12"/>
+        </padding>
+        <VBox>
+            <Label text="High Name" styleClass="task-name"/>
+            <Label text="High Priority" styleClass="task-detail priority-high"/>
+        </VBox>
+        <Button text="+" styleClass="add-button" onAction="#handleAddTask"/>
+    </HBox>
+
+    <HBox fx:id="subtask1" alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="350.0"
+          AnchorPane.topAnchor="80.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12"/>
+        </padding>
+        <VBox>
+            <Label text="High Name" styleClass="task-name"/>
+            <Label text="High Priority" styleClass="task-detail priority-high"/>
+        </VBox>
+        <Button text="+" styleClass="add-button" onAction="#handleAddTask"/>
+    </HBox>
+
+    <HBox fx:id="subtask2" alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="350.0"
+          AnchorPane.topAnchor="160.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12"/>
+        </padding>
+        <VBox>
+            <Label text="Subtask" styleClass="task-name"/>
+            <Label text="Show Notes" styleClass="task-detail"/>
+        </VBox>
+        <Button text="+" styleClass="add-button" onAction="#handleAddTask"/>
+    </HBox>
+
+    <HBox fx:id="subtask3" alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="350.0"
+          AnchorPane.topAnchor="260.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12"/>
+        </padding>
+        <VBox>
+            <Label text="Tubtane" styleClass="task-name"/>
+            <Label text="Rev Nooro" styleClass="task-detail"/>
+        </VBox>
+        <Button text="+" styleClass="add-button" onAction="#handleAddTask"/>
+    </HBox>
+
+    <HBox fx:id="subtask4" alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="350.0"
+          AnchorPane.topAnchor="360.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12"/>
+        </padding>
+        <Circle radius="5.0" styleClass="status-dot status-purple"/>
+        <Label text="Subtask" styleClass="task-name"/>
+        <Button text="+" styleClass="add-button" onAction="#handleAddTask"/>
+    </HBox>
+
+    <HBox fx:id="subSubtask1" alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="600.0"
+          AnchorPane.topAnchor="220.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12"/>
+        </padding>
+        <VBox>
+            <Label text="High Shrim" styleClass="task-name"/>
+            <Label text="In Progress" styleClass="task-detail status-green"/>
+        </VBox>
+        <Button text="+" styleClass="add-button" onAction="#handleAddTask"/>
+    </HBox>
+
+    <HBox fx:id="subSubtask2" alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="600.0"
+          AnchorPane.topAnchor="400.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12"/>
+        </padding>
+        <VBox>
+            <Label text="Higsh Prame" styleClass="task-name"/>
+            <Label text="in Stems" styleClass="task-detail status-green"/>
+        </VBox>
+        <Button text="+" styleClass="add-button" onAction="#handleAddTask"/>
+    </HBox>
+</AnchorPane>

@@ -4,7 +4,7 @@ import atlantafx.base.theme.PrimerLight;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import de.bsommerfeld.orchestra.guice.OrchestraModule;
-import de.bsommerfeld.orchestra.ui.controller.ProjectSelectionController;
+import de.bsommerfeld.orchestra.ui.controller.TaskController;
 import de.bsommerfeld.orchestra.ui.view.StageProvider;
 import de.bsommerfeld.orchestra.ui.view.ViewProvider;
 import javafx.application.Application;
@@ -31,7 +31,7 @@ public class Orchestra extends Application {
         stageProvider.setPrimaryStage(stage);
 
         // Show the project selection view in the primary stage
-        Parent root = viewProvider.requestView(ProjectSelectionController.class).parent();
+        Parent root = viewProvider.requestView(TaskController.class).parent();
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Orchestra - Project Selection");

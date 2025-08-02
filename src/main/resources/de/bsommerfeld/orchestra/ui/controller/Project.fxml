@@ -1,70 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TreeView?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            xmlns="http://javafx.com/javafx"
-            fx:controller="de.bsommerfeld.orchestra.ui.controller.ProjectController"
-            prefHeight="600.0" prefWidth="800.0"
-            styleClass="project-container">
+<AnchorPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.TaskController"
+            prefHeight="600.0" prefWidth="1000.0" styleClass="task-canvas">
 
-    <!-- Header -->
-    <top>
-        <VBox spacing="10" styleClass="project-header">
-            <padding>
-                <Insets top="20" right="20" bottom="20" left="20"/>
-            </padding>
-            <Label fx:id="projectTitleLabel" styleClass="project-title">
-                <font>
-                    <Font size="24.0"/>
-                </font>
-            </Label>
-            <Label fx:id="projectDescriptionLabel" styleClass="project-description">
-                <font>
-                    <Font size="14.0"/>
-                </font>
-            </Label>
+    <Pane fx:id="connectionsPane" />
+
+    <HBox fx:id="rootTask" alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="50.0" AnchorPane.topAnchor="250.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12" />
+        </padding>
+        <VBox>
+            <Label text="High Name" styleClass="task-name" />
+            <Label text="High Priority" styleClass="task-detail", "priority-high" />
         </VBox>
-    </top>
+        <Button text="+" styleClass="add-button" />
+    </HBox>
 
-    <!-- Main content with Voices TreeView -->
-    <center>
-        <VBox spacing="10" styleClass="project-content">
-            <padding>
-                <Insets top="10" right="20" bottom="10" left="20"/>
-            </padding>
-            <HBox>
-                <Label text="Voices" styleClass="section-title">
-                    <font>
-                        <Font size="16.0"/>
-                    </font>
-                </Label>
-            </HBox>
-            <TreeView fx:id="voicesTreeView" VBox.vgrow="ALWAYS" styleClass="voices-tree-view"/>
+    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="350.0" AnchorPane.topAnchor="80.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12" />
+        </padding>
+        <VBox>
+            <Label text="High Name" styleClass="task-name" />
+            <Label text="High Priority" styleClass="task-detail", "priority-high" />
         </VBox>
-    </center>
+        <Button text="+" styleClass="add-button" />
+    </HBox>
 
-    <!-- Choir container -->
-    <left>
-        <VBox fx:id="choirsContainer" spacing="10" styleClass="choirs-container">
-            <padding>
-                <Insets top="10" right="10" bottom="10" left="20"/>
-            </padding>
-            <Label text="Lists" styleClass="section-title">
-                <font>
-                    <Font size="16.0"/>
-                </font>
-            </Label>
-            <VBox fx:id="choirsList" spacing="5" VBox.vgrow="ALWAYS"/>
-            <Button fx:id="addChoirButton" text="+ Add List" onAction="#onAddChoir" styleClass="add-button"/>
+    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="350.0" AnchorPane.topAnchor="160.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12" />
+        </padding>
+        <VBox>
+            <Label text="Subtask" styleClass="task-name" />
+            <Label text="Show Notes" styleClass="task-detail" />
         </VBox>
-    </left>
+        <Button text="+" styleClass="add-button" />
+    </HBox>
 
-</BorderPane>
+    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="350.0" AnchorPane.topAnchor="260.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12" />
+        </padding>
+        <VBox>
+            <Label text="Tubtane" styleClass="task-name" />
+            <Label text="Rev Nooro" styleClass="task-detail" />
+        </VBox>
+        <Button text="+" styleClass="add-button" />
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="350.0" AnchorPane.topAnchor="360.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12" />
+        </padding>
+        <Circle radius="5.0" styleClass="status-dot", "status-purple" />
+        <Label text="Subtask" styleClass="task-name" />
+        <Button text="+" styleClass="add-button" />
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="600.0" AnchorPane.topAnchor="220.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12" />
+        </padding>
+        <VBox>
+            <Label text="High Shrim" styleClass="task-name" />
+            <Label text="In Progress" styleClass="task-detail", "status-green" />
+        </VBox>
+        <Button text="+" styleClass="add-button" />
+    </HBox>
+
+    <HBox alignment="CENTER_LEFT" spacing="10" styleClass="task-card" AnchorPane.leftAnchor="600.0" AnchorPane.topAnchor="400.0">
+        <padding>
+            <Insets top="8" right="8" bottom="8" left="12" />
+        </padding>
+        <VBox>
+            <Label text="Higsh Prame" styleClass="task-name" />
+            <Label text="in Stems" styleClass="task-detail", "status-green" />
+        </VBox>
+        <Button text="+" styleClass="add-button" />
+    </HBox>
+
+</AnchorPane>

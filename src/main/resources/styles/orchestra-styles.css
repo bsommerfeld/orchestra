@@ -1,150 +1,52 @@
-.custom-title-bar {
-    -fx-background-color: #33363b; /* Dunkler Hintergrund, passend zu PrimerLight */
-    -fx-padding: 8px 10px 8px 10px; /* Padding: Top, Right, Bottom, Left. Top und Right müssen angepasst werden! */
-    /* Der Wert für das rechte Padding muss sorgfältig gewählt werden,
-       um die OS-Fensterbuttons (Minimieren, Maximieren, Schließen) nicht zu überdecken.
-       Dieser Wert ist sehr OS-abhängig (Windows, macOS, Linux). */
-    -fx-min-height: 30px; /* Mindesthöhe für die Titelleiste */
-    -fx-pref-height: 30px;
+.task-canvas {
+    -fx-background-color: #2D2D2D;
 }
 
-.project-title-label {
-    -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-padding: 0px 0px 0px 60px;
-    -fx-font-weight: bold;
-}
-
-.main-content {
-    -fx-background-color: -color-bg-default; /* Nutzt AtlantaFX Hintergrundfarbe */
-    -fx-padding: 10px;
-}
-
-/* Project view styles */
-.project-container {
-    -fx-background-color: white;
-}
-
-.project-header {
-    -fx-background-color: #f5f5f5;
-    -fx-border-color: #e0e0e0;
-    -fx-border-width: 0 0 1 0;
-}
-
-.project-title {
-    -fx-font-weight: bold;
-}
-
-.project-content {
-    -fx-background-color: white;
-}
-
-.section-title {
-    -fx-font-weight: bold;
-}
-
-/* TreeView styles */
-.voices-tree-view {
-    -fx-background-color: white;
-    -fx-border-color: #e0e0e0;
+.task-card {
+    -fx-background-color: #3C3C3C;
+    -fx-background-radius: 12;
+    -fx-border-color: #4D4D4D;
     -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.2, 0, 2);
 }
 
-/* Style for tree cells to show indentation lines */
-.voice-tree-cell {
-    -fx-background-color: white;
-    -fx-padding: 2 0 2 0;
-}
-
-/* Style for the tree disclosure node (the arrow) */
-.tree-disclosure-node {
-    -fx-background-color: #999999;
-}
-
-/* Style for the tree cell when selected */
-.voice-tree-cell:selected {
-    -fx-background-color: #e0e0e0;
-}
-
-/* Style for the indentation lines */
-.tree-cell > .tree-disclosure-node > .arrow {
-    -fx-background-color: #999999;
-}
-
-/* Add vertical lines to show indentation */
-.tree-cell:filled:selected > .tree-disclosure-node > .arrow {
-    -fx-background-color: #333333;
-}
-
-/* Custom style for the tree view to show indentation lines */
-.voices-tree-view .tree-cell {
-    -fx-indent: 20;
-    -fx-border-color: transparent transparent transparent #cccccc;
-    -fx-border-width: 0 0 0 1;
-    -fx-padding: 5 5 5 5;
-}
-
-/* We'll handle hiding indentation lines for root items in the cell factory */
-/* Instead of using a pseudo-selector, we'll add a custom style class in the code */
-.root-tree-cell {
-    -fx-border-width: 0;
-}
-
-/* Style for checkboxes in the tree */
-.voices-tree-view .check-box {
-    -fx-padding: 0 5 0 0;
-}
-
-/* Style for the add voice button */
-.add-voice-button {
-    -fx-background-color: #4CAF50;
-    -fx-text-fill: white;
+.task-name {
+    -fx-font-size: 14px;
+    -fx-text-fill: #E0E0E0;
     -fx-font-weight: bold;
-    -fx-min-width: 24px;
-    -fx-min-height: 24px;
-    -fx-max-width: 24px;
-    -fx-max-height: 24px;
-    -fx-padding: 0;
-    -fx-background-radius: 12px;
-    -fx-cursor: hand;
 }
 
-.add-voice-button:hover {
-    -fx-background-color: #45a049;
+.task-detail {
+    -fx-font-size: 11px;
+    -fx-text-fill: #A0A0A0;
 }
 
-/* Style for the choir buttons */
-.choir-button {
-    -fx-background-color: #f5f5f5;
-    -fx-border-color: #e0e0e0;
-    -fx-border-width: 1;
-    -fx-padding: 8px;
-    -fx-font-weight: bold;
-    -fx-cursor: hand;
+.priority-high {
+    -fx-text-fill: #FF6B6B;
 }
 
-.choir-button:hover {
-    -fx-background-color: #e0e0e0;
+.status-green {
+    -fx-text-fill: #81C784;
 }
 
-/* Style for the add list button */
+.status-dot {
+    -fx-stroke: transparent;
+}
+
+.status-purple {
+    -fx-fill: #BA68C8;
+}
+
 .add-button {
-    -fx-background-color: #2196F3;
-    -fx-text-fill: white;
+    -fx-background-color: transparent;
+    -fx-text-fill: #A0A0A0;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-padding: 8px;
     -fx-cursor: hand;
+    -fx-padding: -5 0 0 0;
 }
 
 .add-button:hover {
-    -fx-background-color: #0b7dda;
-}
-
-/* Style for the choirs container */
-.choirs-container {
-    -fx-background-color: #f9f9f9;
-    -fx-border-color: #e0e0e0;
-    -fx-border-width: 0 1 0 0;
-    -fx-min-width: 200px;
-    -fx-pref-width: 200px;
+    -fx-text-fill: #FFFFFF;
 }
