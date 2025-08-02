@@ -163,6 +163,19 @@ public class TaskController implements Initializable {
             }
         }
         
+        // Calculate the total width of the hierarchy
+        double totalHierarchyWidth = maxLevel * HORIZONTAL_SPACING;
+        
+        // Calculate the center position of the canvas
+        double canvasWidth = taskCanvas.getWidth();
+        if (canvasWidth == 0) {
+            // If the canvas width is not yet available, use the initial size from FXML
+            canvasWidth = taskCanvas.getPrefWidth();
+        }
+        
+        // Calculate the starting X position to center the hierarchy
+        double startX = Math.max((canvasWidth - totalHierarchyWidth) / 2, INITIAL_LEFT_MARGIN);
+        
         // Apply layout level by level
         for (int level = 0; level <= maxLevel; level++) {
             List<String> tasksInLevel = levelToTasks.get(level);
@@ -170,11 +183,31 @@ public class TaskController implements Initializable {
                 continue;
             }
             
-            // Calculate horizontal position for this level
-            double levelX = INITIAL_LEFT_MARGIN + (level * HORIZONTAL_SPACING);
+            // Calculate horizontal position for this level with centering
+            double levelX = startX + (level * HORIZONTAL_SPACING);
+            
+            // Calculate total height of tasks in this level
+            double totalLevelHeight = 0;
+            for (String taskId : tasksInLevel) {
+                HBox taskCard = taskCards.get(taskId);
+                if (taskCard != null) {
+                    totalLevelHeight += taskCard.getPrefHeight() + VERTICAL_SPACING;
+                }
+            }
+            // Subtract the last vertical spacing
+            if (!tasksInLevel.isEmpty()) {
+                totalLevelHeight -= VERTICAL_SPACING;
+            }
+            
+            // Calculate starting Y position to center tasks vertically
+            double canvasHeight = taskCanvas.getHeight();
+            if (canvasHeight == 0) {
+                canvasHeight = taskCanvas.getPrefHeight();
+            }
+            double startY = Math.max((canvasHeight - totalLevelHeight) / 2, INITIAL_TOP_MARGIN);
             
             // Position each task in this level
-            double currentY = INITIAL_TOP_MARGIN;
+            double currentY = startY;
             for (String taskId : tasksInLevel) {
                 HBox taskCard = taskCards.get(taskId);
                 if (taskCard != null) {
