@@ -9,6 +9,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -53,6 +54,7 @@ public class TaskController implements Initializable {
     private Map<String, List<String>> taskRelationships = new HashMap<>();
     private Map<String, Integer> taskLevels = new HashMap<>();
     private Map<Integer, List<String>> levelToTasks = new HashMap<>();
+    private Map<String, CheckBox> taskCheckboxes = new HashMap<>();
     
     // Variable to track the currently selected task
     private String selectedTaskId = null;
@@ -97,14 +99,55 @@ public class TaskController implements Initializable {
     }
     
     private void initializeTaskRelationships() {
+        // Clear the task canvas
+        taskCanvas.getChildren().clear();
+        taskCanvas.getChildren().add(connectionsPane);
+        
+        // Create new task cards with the updated structure
+        HBox newRootTask = createTaskCard("rootTask", "Main Task", "High Priority");
+        HBox newSubtask1 = createTaskCard("subtask1", "Subtask 1", "Medium Priority");
+        HBox newSubtask2 = createTaskCard("subtask2", "Subtask 2", "Low Priority");
+        HBox newSubtask3 = createTaskCard("subtask3", "Subtask 3", "In Progress");
+        HBox newSubtask4 = createTaskCard("subtask4", "Subtask 4", "Pending Review");
+        HBox newSubSubtask1 = createTaskCard("subSubtask1", "Sub-subtask 1", "Almost Done");
+        HBox newSubSubtask2 = createTaskCard("subSubtask2", "Sub-subtask 2", "Just Started");
+        
+        // Position the task cards on the canvas
+        AnchorPane.setLeftAnchor(newRootTask, 50.0);
+        AnchorPane.setTopAnchor(newRootTask, 250.0);
+        
+        AnchorPane.setLeftAnchor(newSubtask1, 350.0);
+        AnchorPane.setTopAnchor(newSubtask1, 80.0);
+        
+        AnchorPane.setLeftAnchor(newSubtask2, 350.0);
+        AnchorPane.setTopAnchor(newSubtask2, 160.0);
+        
+        AnchorPane.setLeftAnchor(newSubtask3, 350.0);
+        AnchorPane.setTopAnchor(newSubtask3, 260.0);
+        
+        AnchorPane.setLeftAnchor(newSubtask4, 350.0);
+        AnchorPane.setTopAnchor(newSubtask4, 360.0);
+        
+        AnchorPane.setLeftAnchor(newSubSubtask1, 600.0);
+        AnchorPane.setTopAnchor(newSubSubtask1, 220.0);
+        
+        AnchorPane.setLeftAnchor(newSubSubtask2, 600.0);
+        AnchorPane.setTopAnchor(newSubSubtask2, 400.0);
+        
+        // Add the task cards to the canvas
+        taskCanvas.getChildren().addAll(
+            newRootTask, newSubtask1, newSubtask2, newSubtask3, 
+            newSubtask4, newSubSubtask1, newSubSubtask2
+        );
+        
         // Register all task cards
-        taskCards.put("rootTask", rootTask);
-        taskCards.put("subtask1", subtask1);
-        taskCards.put("subtask2", subtask2);
-        taskCards.put("subtask3", subtask3);
-        taskCards.put("subtask4", subtask4);
-        taskCards.put("subSubtask1", subSubtask1);
-        taskCards.put("subSubtask2", subSubtask2);
+        taskCards.put("rootTask", newRootTask);
+        taskCards.put("subtask1", newSubtask1);
+        taskCards.put("subtask2", newSubtask2);
+        taskCards.put("subtask3", newSubtask3);
+        taskCards.put("subtask4", newSubtask4);
+        taskCards.put("subSubtask1", newSubSubtask1);
+        taskCards.put("subSubtask2", newSubSubtask2);
         
         // Define task relationships (parent -> children)
         taskRelationships.put("rootTask", new ArrayList<>(Arrays.asList("subtask1", "subtask2", "subtask3", "subtask4")));
@@ -636,18 +679,42 @@ public class TaskController implements Initializable {
         taskCard.getStyleClass().add("task-card");
         taskCard.setPadding(new Insets(8, 8, 8, 12));
         
+        // Create the checkbox
+        CheckBox checkbox = new CheckBox();
+        checkbox.setOnAction(event -> handleTaskCheckboxAction(id, checkbox.isSelected()));
+        taskCheckboxes.put(id, checkbox);
+        
         // Create the content container
         VBox content = new VBox();
+        content.setSpacing(5);
         
         // Create the task name label
         Label nameLabel = new Label(name);
         nameLabel.getStyleClass().add("task-name");
         content.getChildren().add(nameLabel);
         
-        // Create the task detail label
-        Label detailLabel = new Label(detail);
-        detailLabel.getStyleClass().add("task-detail");
-        content.getChildren().add(detailLabel);
+        // Create the labels HBox
+        HBox labelsBox = new HBox();
+        labelsBox.setSpacing(5);
+        labelsBox.getStyleClass().add("task-labels");
+        
+        // Add sample labels with different colors (in a real app, these would be dynamic)
+        // Randomly select 1-3 labels with different colors
+        String[] labelTexts = {"Task", "Feature", "Bug", "UI", "API", "Docs"};
+        String[] labelColors = {"label-red", "label-blue", "label-green", "label-purple", "label-yellow"};
+        
+        int numLabels = 1 + (int)(Math.random() * 2); // 1-3 labels
+        for (int i = 0; i < numLabels; i++) {
+            String labelText = labelTexts[(int)(Math.random() * labelTexts.length)];
+            String labelColor = labelColors[(int)(Math.random() * labelColors.length)];
+            
+            Label label = new Label(labelText);
+            label.getStyleClass().addAll("task-label", labelColor);
+            labelsBox.getChildren().add(label);
+        }
+        
+        // Add the labels HBox to the content
+        content.getChildren().add(labelsBox);
         
         // Create the add button
         Button addButton = new Button("+");
@@ -655,7 +722,7 @@ public class TaskController implements Initializable {
         addButton.setOnAction(this::handleAddTask);
         
         // Add components to the task card
-        taskCard.getChildren().addAll(content, addButton);
+        taskCard.getChildren().addAll(checkbox, content, addButton);
         
         return taskCard;
     }
@@ -704,6 +771,45 @@ public class TaskController implements Initializable {
         
         // Consume the event to prevent it from bubbling up
         event.consume();
+    }
+    
+    /**
+     * Handles the action when a task checkbox is clicked.
+     * If a task is checked, all its subtasks will be checked too.
+     * 
+     * @param taskId The ID of the task whose checkbox was clicked
+     * @param isChecked Whether the checkbox is now checked or unchecked
+     */
+    private void handleTaskCheckboxAction(String taskId, boolean isChecked) {
+        // Update all subtasks recursively
+        updateSubtaskCheckboxes(taskId, isChecked);
+    }
+    
+    /**
+     * Recursively updates the checkbox state of all subtasks.
+     * 
+     * @param parentId The ID of the parent task
+     * @param isChecked Whether the checkboxes should be checked or unchecked
+     */
+    private void updateSubtaskCheckboxes(String parentId, boolean isChecked) {
+        // Get the list of subtasks
+        List<String> subtaskIds = taskRelationships.get(parentId);
+        if (subtaskIds == null || subtaskIds.isEmpty()) {
+            return;
+        }
+        
+        // Update each subtask
+        for (String subtaskId : subtaskIds) {
+            // Get the checkbox for this subtask
+            CheckBox checkbox = taskCheckboxes.get(subtaskId);
+            if (checkbox != null) {
+                // Set the checkbox state without triggering the action event
+                checkbox.setSelected(isChecked);
+            }
+            
+            // Recursively update this subtask's subtasks
+            updateSubtaskCheckboxes(subtaskId, isChecked);
+        }
     }
     
     /**

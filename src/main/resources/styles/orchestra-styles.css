@@ -3,29 +3,67 @@
 }
 
 .task-card {
-    -fx-background-color: #3C3C3C;
+    -fx-background-color: white;
     -fx-background-radius: 12;
-    -fx-border-color: #4D4D4D;
+    -fx-border-color: #E0E0E0;
     -fx-border-width: 1;
     -fx-border-radius: 12;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.2, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.2, 0, 2);
     -fx-cursor: move;
 }
 
 .task-card:hover {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.6), 15, 0.3, 0, 3);
-    -fx-border-color: #6D6D6D;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 15, 0.3, 0, 3);
+    -fx-border-color: #BDBDBD;
 }
 
 .task-name {
     -fx-font-size: 14px;
-    -fx-text-fill: #E0E0E0;
+    -fx-text-fill: #333333;
     -fx-font-weight: bold;
 }
 
 .task-detail {
     -fx-font-size: 11px;
-    -fx-text-fill: #A0A0A0;
+    -fx-text-fill: #757575;
+}
+
+/* Holographic label styles */
+.task-labels {
+    -fx-padding: 2 0 0 0;
+}
+
+.task-label {
+    -fx-padding: 2 8 2 8;
+    -fx-background-radius: 12;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.6), 8, 0.0, 0, 0);
+}
+
+.label-red {
+    -fx-background-color: linear-gradient(to right, #FF5252, #FF8A80);
+    -fx-text-fill: white;
+}
+
+.label-blue {
+    -fx-background-color: linear-gradient(to right, #448AFF, #82B1FF);
+    -fx-text-fill: white;
+}
+
+.label-green {
+    -fx-background-color: linear-gradient(to right, #69F0AE, #B9F6CA);
+    -fx-text-fill: #333333;
+}
+
+.label-purple {
+    -fx-background-color: linear-gradient(to right, #E040FB, #EA80FC);
+    -fx-text-fill: white;
+}
+
+.label-yellow {
+    -fx-background-color: linear-gradient(to right, #FFD740, #FFE57F);
+    -fx-text-fill: #333333;
 }
 
 .priority-high {
