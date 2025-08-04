@@ -87,9 +87,14 @@ public class TaskController implements Initializable {
             // Apply automatic layout
             applyAutomaticLayout();
 
-            // Update canvas size and draw connections
+            // Update canvas size
             updateCanvasSize();
-            drawConnections();
+            
+            // Draw connections after layout is fully complete
+            // Use a nested Platform.runLater to ensure the layout pass is complete
+            Platform.runLater(() -> {
+                drawConnections();
+            });
         });
     }
 
